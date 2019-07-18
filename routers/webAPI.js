@@ -15,5 +15,6 @@ router.post('/user/login', userController.authenticate);
 // router.get('/user/me', userController.fetchMyProfile)
 
 router.post('/product/new', productController.postByUser);
+router.get('/product', productController.retrieveAllProduct);
 
 module.exports = router;

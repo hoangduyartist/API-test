@@ -14,13 +14,13 @@ const options = {
             }
         },
         definitions: {
-            test: {
-                properties: {
-                    id : {type: Number},
-                    name: {type: String},
-                    age: {type: Number}
-                }
-            },
+            // test: {
+            //     properties: {
+            //         id : {type: Number},
+            //         name: {type: String},
+            //         age: {type: Number}
+            //     }
+            // },
         },
         // tags: [
         //   {
@@ -32,7 +32,7 @@ const options = {
         host: `${config.HOST}:${config.PORT}`,
         basePath: '/api'
     },
-    apis: [ './user/controller.js', './product/controller.js']
+    apis: [ './user/controller.js', './product/controller.js', './user/model.js', './product/model.js']
 
 }
 

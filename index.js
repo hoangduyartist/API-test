@@ -7,20 +7,23 @@ const mongoose = require("mongoose");
 const config = require('./configs/config');
 const webAPI = require('./routers/webAPI');
 
+app.set("view engine", "ejs");
+app.set("views", "./views");
 app.use(bodyParser.json()); //using bodypaser as middleWave
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/api', webAPI);
 
-app.get('/', (req,res)=>res.send("welcome to API test server"))
+app.get('/', (req,res)=>res.render("index"))
+app.get('/test', (req,res)=>res.send({status: "status of response : 1 (expected); 0 (unexpected)", message:"message of response", data:"retrieve data if it exist"}))
 
 server.listen(config.PORT, () => {
     console.log("server listen on port " + config.PORT + " with host " + config.HOST);
 });
 
 //connectDB
-let urlMongo = process.env.MONGODB_URI || "mongodb+srv://hoangduy:hoangduy@cluster0-a0ada.mongodb.net/testAPI?retryWrites=true";
+
 mongoose.Promise = global.Promise;
 mongoose.set('useFindAndModify', false);
-mongoose.connect(urlMongo, { useNewUrlParser: true })
+mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true })
     .then(connectResult => console.log('connected DataBase MongGo'))
     .catch(connectError => console.log(connectError));
