@@ -1,0 +1,103 @@
+Cấu hình swagger cho nodejs
+
+demo https://github.com/hoangduyartist/API-test
+
+cài đặc các gói
+swagger-jsdoc
+swagger-ui-express
+
+cấu trúc thư mục
+
+-configs(folder)
+ |
+ --config.js
+-swagger(folder)
+ |
+ --controller.js 
+-routers(folder)
+ |
+ --webAPI.js
+-package.json
+
+
+-----------index.js
+app.use('/api', webAPI);
+
+-----------routers/webAPI.js
+const express = require("express");
+const router = express.Router();
+//import swagger
+const swaggerController = require('./../swagger/controller');
+
+//swagger
+swagger UI sẽ chạy trên <host>:<port>/api/docs
+router.use('/docs',swaggerController.swaggerUI.serve,swaggerController.swaggerUI.setup(swaggerController.swaggerSpec));
+router.get('/json',swaggerController.getJson)
+
+-----------swagger/controller.js
+const swaggerJSDoc = require('swagger-jsdoc')
+const swaggerUI = require('swagger-ui-express')
+
+const config = require('./../configs/config')
+
+//hiển thị
+const options = {
+ swaggerDefinition: {
+ ....
+  host: `${config.HOST}:${config.PORT}`, //important
+  basePath: '/api' //important (chỉ nên có 1 dấu /), phải giống với router khai báo ở index.js
+ },
+ apis: [ './user/controller.js', './product/controller.js', './user/model.js', './product/model.js'] //important - chỉ có những file chứa mã swagger ĐƯỢC khai báo ở đây mới có tác dụng (hiển thị dc)
+ ///giai thích
+ ./product/controller.js - hiển thị swagger của product cho phép test API ko cần post-man
+ ./product/model.js - hiển thị model product tương ứng ở cuối trang swagger
+}
+
+module.exports = {
+    swaggerUI,
+    getJson,
+    swaggerSpec
+    ....
+}
+
+
+/////test
+--------------/product/controller.js
+
+const productService = require('./service');
+
+//đoạn mã swagger này chỉ có tác dụng khi file chứa nó dc khai báo ở swagger/controller.js
+/**
+ * @swagger
+ * /product/new:
+ *   post:
+ *     description: Send product-info to server, adding new product
+ *     tags:
+ *       - product
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *       - application/json    
+ *     parameters:
+ *       - name: product
+ *         description: new product-info
+ *         in: body 
+ *         required: true
+ *         schema:
+  *           example: {
+  *             "name": "name",
+  *             "description": "description"
+  *           }
+ *     responses:
+ *       201:
+ *         description: (status:1) New account created
+ *       500: 
+ *         description: (status:0) Email or username is taken
+ */
+
+//function tương ứng
+function postByUser(req,res){
+    productService.postByUser(req.body)
+    .then(data=>res.send(data))
+    .catch(err=>res.send({status: 0, message: err}))
+}
